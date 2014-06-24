@@ -82,10 +82,8 @@ class Tempest(Framework):
         LOG.debug('Tempest command: {0}'.format(tempest_cmd))
 
         try:
-            subprocess.check_output(
-                tempest_cmd,
-                shell=True,
-                stderr=subprocess.STDOUT
-            )
+            output = subprocess.check_output(tempest_cmd, shell=True,
+                                             stderr=subprocess.STDOUT)
+            return output
         except Exception as exc:
             LOG.error(exc.output)
