@@ -1,5 +1,6 @@
 argh
 jinja2
+nose
 paste
 pyramid
 python-keystoneclient

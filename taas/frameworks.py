@@ -1,34 +1,36 @@
 import logging
+import sys
 import os
 import subprocess
 
 from jinja2 import Template
 from os.path import abspath, dirname, exists, join
+from taas.test_environments.cloudcafe_compute import get_cloudcafe_env_dict
 
 LOG = logging.getLogger(__name__)
 
 
 class Framework(object):
 
-    def __init__(self, config, framework, test):
-        self.config = config
-        self.fwrk = framework
+    def __init__(self, env, framework, test):
+        self.env = env
+        self.framework = framework
         self.test = test
 
     def populate_settings(self):
         LOG.info('Building configuration file')
 
         template_dir = join(abspath(dirname(__file__)), 'files/')
-        example = '{0}.conf.example'.format(self.fwrk)
+        example = '{0}.conf.example'.format(self.framework)
 
         with open(join(template_dir, example), 'r') as stream:
             template = Template(stream.read())
 
-        self.settings = template.render(catalog=self.config['catalog'],
-                                        images=self.config['images'],
-                                        network=self.config['network'],
-                                        router=self.config['router'],
-                                        users=self.config['users'])
+        self.settings = template.render(catalog=self.env.config['catalog'],
+                                        images=self.env.config['images'],
+                                        network=self.env.config['network'],
+                                        router=self.env.config['router'],
+                                        users=self.env.config['users'])
 
         with open('/opt/tempest/etc/tempest.conf', 'w') as stream:
             stream.write(self.settings)
@@ -39,8 +41,21 @@ class Framework(object):
 
 class CloudCafe(Framework):
 
-    def __init__(self, config, framework, test):
-        super(CloudCafe, self).__init__(config, framework, test)
+    def __init__(self, environment, framework, test, devstack):
+        super(CloudCafe, self).__init__(environment.config, framework, test)
+        self.nova = environment.nova
+        self.keystone = environment.keystone
+        self.devstack = devstack
+
+    def test_from(self):
+
+        subprocess_env = get_cloudcafe_env_dict(self.nova, self.keystone,
+                                                self.env.config, self.devstack)
+        sys.exit(0)
+        subprocess.Popen("cafe-runner compute empty.config",
+                         env=subprocess_env, shell=True)
+
+
 
 
 class Tempest(Framework):
@@ -82,10 +97,8 @@ class Tempest(Framework):
         LOG.debug('Tempest command: {0}'.format(tempest_cmd))
 
         try:
-            subprocess.check_output(
-                tempest_cmd,
-                shell=True,
-                stderr=subprocess.STDOUT
-            )
+            output = subprocess.check_output(tempest_cmd, shell=True,
+                                             stderr=subprocess.STDOUT)
+            return output
         except Exception as exc:
-            LOG.error(exc.output)
+            LOG.error(exc)
