@@ -172,7 +172,7 @@ class CloudCafe(Framework):
             },
 
             "compute_admin_user": {
-                "username": nova_user,
+                "username": nova_user.name,
                 "password": nova.client.password,
                 "tenant_name": keystone.tenants.find(
                     id=nova_user.tenantId).name
