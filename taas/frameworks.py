@@ -143,7 +143,8 @@ class CloudCafe(Framework):
 
         compute = {
             "compute": {
-                "hypervisor": nova.hypervisors.list[0].hypervisor_type.lower()
+                "hypervisor": nova.hypervisors.list()[0]
+                .hypervisor_type.lower()
             },
 
             "compute_admin_auth_config": {
