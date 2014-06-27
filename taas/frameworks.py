@@ -10,25 +10,25 @@ LOG = logging.getLogger(__name__)
 
 class Framework(object):
 
-    def __init__(self, config, framework, test):
-        self.config = config
-        self.fwrk = framework
+    def __init__(self, env, framework, test):
+        self.env = env
+        self.framework = framework
         self.test = test
 
     def populate_settings(self):
         LOG.info('Building configuration file')
 
         template_dir = join(abspath(dirname(__file__)), 'files/')
-        example = '{0}.conf.example'.format(self.fwrk)
+        example = '{0}.conf.example'.format(self.framework)
 
         with open(join(template_dir, example), 'r') as stream:
             template = Template(stream.read())
 
-        self.settings = template.render(catalog=self.config['catalog'],
-                                        images=self.config['images'],
-                                        network=self.config['network'],
-                                        router=self.config['router'],
-                                        users=self.config['users'])
+        self.settings = template.render(catalog=self.env.config['catalog'],
+                                        images=self.env.config['images'],
+                                        network=self.env.config['network'],
+                                        router=self.env.config['router'],
+                                        users=self.env.config['users'])
 
         with open('/opt/tempest/etc/tempest.conf', 'w') as stream:
             stream.write(self.settings)
@@ -43,7 +43,7 @@ class CloudCafe(Framework):
         super(CloudCafe, self).__init__(config, framework, test)
 
     def test_from(self):
-        pass
+        self.load_env()
         # load environment variables
         # run test
 
@@ -52,19 +52,18 @@ class CloudCafe(Framework):
     #         export = "CAFE_{0}_{1}".format(section, variable)
     #         os.environ[export] = value
 
-    def export_variables(section, values):
+    def export_variables(self, section, values):
         for variable, value in values.items():
             export = "CAFE_{0}_{1}".format(section, variable)
             print "export {}={}".format(export, value)
 
-
     def get_images(self):
-        images = nova.images.list()
+        images = self.env.nova.images.list()
         primary = images[0]
         secondary = images[1]
         return primary, secondary
 
-    def config():
+    def load_env(self):
         # endpoint = self.get_endpoint()
         # admin_user, admin_password, admin_tenant = self.get_admin_user()
         # admin_tenant_id, admin_user_id, admin_project_id = self.get_admin_ids(
@@ -83,7 +82,12 @@ class CloudCafe(Framework):
         #
         # endpoint_versioned = "{0}/v2.0".format(endpoint)
         # admin_endpoint_versioned = endpoint_versioned.replace("5000", "35357")
+        primary_img, secondary_imd = self.get_images()
 
+        users = self.env.config['users']
+        user1 = users['guest'][0]
+        nova = self.env.nova
+        keystone = self.env.keystone
 
         args = {
             "OPENCAFE_ENGINE": {
@@ -95,24 +99,9 @@ class CloudCafe(Framework):
 
             },
 
-            "user": {
-                "username": "admin",
-                "password": "secrete",
-                "tenant_name": "admin"
-            },
-
             "user_auth_config": {
                 "strategy": "keystone",
-                "endpoint": "http://192.168.4.1:5000/v2.0"
-            },
-
-            "compute_endpoint": {
-                "compute_endpoint_name": "nova",
-                "compute_endpoint_url": "http://192.168.4.1:8774/v2/08e7b64a9814479597c1082946f402a4",
-                "region": "RegionOne"
-            },
-            "compute": {
-                "hypervisor": "qemu" # nova.hypervisors.list[0].hypervisor_type.lower()
+                "endpoint": keystone.auth_url
             },
             "flavors": {
                 "primary_flavor": "1",
@@ -134,12 +123,14 @@ class CloudCafe(Framework):
                 "resource_build_attempts": "1",
                 "disk_format_type": "ext3",
                 "default_file_path": "/",
-                "expected_networks": '{"private": {"v4": true, "v6": false}}'
+                "expected_networks": '\'{"private":'
+                                     '{"v4": true, "v6": false}}\'',
+                "ephemeral_disk_max_size": "10"
             },
             "images": {
                 "primary_image_has_protected_properties": "false",
-                "primary_image": "76591c9e-9a1e-472d-ac3a-588f2e7f2849",
-                "secondary_image": "609ead48-726b-4f77-ae7a-a27e4528263a",
+                "primary_image": primary_img,
+                "secondary_image": secondary_imd,
             },
             "marshalling": {
                 "serialize_format": "json",
@@ -148,10 +139,56 @@ class CloudCafe(Framework):
 
         }
 
+        nova_user = keystone.users.find(name=nova.client.user)
+
+        compute = {
+            "compute": {
+                "hypervisor": nova.hypervisors.list[0].hypervisor_type.lower()
+            },
+
+            "compute_admin_auth_config": {
+                "endpoint": nova.client.management_url,
+                "strategy": nova.client.auth_system
+            },
+
+            "compute_endpoint": {
+                "compute_endpoint_name": "nova",
+                "compute_endpoint_url": nova.client.auth_url,
+                "region": "RegionOne"
+            },
+
+            "compute_admin_endpoint": {
+                "compute_endpoint_name": "nova",
+                "region": "RegionOne"
+            },
+
+            "user": {
+                "username": nova_user,
+                "password": nova.client.password, # not sure if this is right
+                "tenant_id": nova_user.tenantId,
+                "user_id": nova_user.id,
+                "project_id": nova.projectid
+            },
+
+            "compute_admin_user": {
+                "username": nova_user,
+                "password": nova.client.password,
+                "tenant_name": keystone.tenants.find(
+                    id=nova_user.tenantId).name
+            },
+
+            "compute_secondary_user": {
+                "username": user1['name'],
+                "password": user1['password'],
+                "tenant_name": keystone.tenants.find(
+                    id=user1['ids']['tenant']).name
+            }
+        }
+
+        args.update(compute)
+
         for section, values in args.items():
-            export_variables(section, values)
-
-
+            self.export_variables(section, values)
 
 
 class Tempest(Framework):
@@ -197,4 +234,4 @@ class Tempest(Framework):
                                              stderr=subprocess.STDOUT)
             return output
         except Exception as exc:
-            LOG.error(exc.output)
+            LOG.error(exc)
