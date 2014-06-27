@@ -164,7 +164,7 @@ class CloudCafe(Framework):
             },
 
             "user": {
-                "username": nova_user,
+                "username": nova_user.name,
                 "password": nova.client.password, # not sure if this is right
                 "tenant_id": nova_user.tenantId,
                 "user_id": nova_user.id,
