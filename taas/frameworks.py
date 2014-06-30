@@ -164,7 +164,7 @@ class CloudCafe(Framework):
             },
 
             "compute_admin_auth_config": {
-                "endpoint": nova.client.management_url,
+                "endpoint": nova.client.auth_url,
                 "strategy": nova.client.auth_system
             },
 
