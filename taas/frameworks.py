@@ -59,8 +59,8 @@ class CloudCafe(Framework):
 
     def get_images(self):
         images = self.env.nova.images.list()
-        primary = images[0]
-        secondary = images[1]
+        primary = images[0].id
+        secondary = images[1].id
         return primary, secondary
 
     def load_env(self):
@@ -127,7 +127,6 @@ class CloudCafe(Framework):
                                      '{"v4": true, "v6": false}}\'',
                 "ephemeral_disk_max_size": "10",
                 "default_injected_files": "",
-                "": ""
             },
             "images": {
                 "primary_image_has_protected_properties": "false",
