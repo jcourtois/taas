@@ -110,32 +110,49 @@ class CloudCafe(Framework):
             },
             "servers": {
                 "personality_file_injection_enabled": "true",
-                "instance_disk_path": "/dev/xvda",
+                "instance_disk_path": "/dev/xvda",  # ?
                 "split_ephemeral_disk_enabled": "true",
-                "instance_auth_strategy": "key",
+                "instance_auth_strategy": "key",  # ?
                 "server_status_interval": "15",
                 "server_build_timeout": "600",
-                "server_resize_timeout": "1800"
-                "network_for_ssh=private",
-                "ip_address_version_for_ssh": "4",
+                "server_resize_timeout": "1800",
+                "network_for_ssh": "private",
+                "ip_address_version_for_ssh": "4",  # ?
                 "connection_retry_interval": "15",
                 "connection_timeout": "600",
-                "resource_build_attempts": "1",
-                "disk_format_type": "ext3",
-                "default_file_path": "/",
+                "resource_build_attempts": "3",  # ?
+                "disk_format_type": "ext3",  # ?
+                "default_file_path": "/",  # ?
                 "expected_networks": '\'{"private":'
                                      '{"v4": true, "v6": false}}\'',
-                "ephemeral_disk_max_size": "10"
+                "ephemeral_disk_max_size": "10",
+                "default_injected_files": "",
+                "": ""
             },
             "images": {
                 "primary_image_has_protected_properties": "false",
                 "primary_image": primary_img,
                 "secondary_image": secondary_imd,
+                "image_status_interval": "15",
+                "snapshot_timeout": "900",
+                "can_get_deleted_image": "true",  # guess
+                "primary_image_default_user": "admin",  # guess
+                "non_inherited_metadata_filepath": None  # guess; apparently this can be optional
             },
+
             "marshalling": {
                 "serialize_format": "json",
                 "deserialize_format": "json"
-            }
+            },
+
+            # "config_drive": {
+            #     "openstack_meta_path": "<path_to_openstack/latest/meta_data.json>",
+            #     "ec_meta_path": "<path_to_ec2/latest/meta-data.json>",
+            #     "base_path_to_mount": "<config_drive_path>",
+            #     "mount_source_path": "<mount_source_path>",
+            #     "min_size": "<min_size>",
+            #     "max_size": "<max_size>"
+            # }
 
         }
 
@@ -154,7 +171,7 @@ class CloudCafe(Framework):
 
             "compute_endpoint": {
                 "compute_endpoint_name": "nova",
-                "compute_endpoint_url": nova.client.auth_url,
+                "compute_endpoint_url": nova.client.auth_url,  # not in example config
                 "region": "RegionOne"
             },
 
@@ -163,12 +180,12 @@ class CloudCafe(Framework):
                 "region": "RegionOne"
             },
 
-            "user": {
+            "user": {  # this is an admin user; according to the reference config, should not be
                 "username": nova_user.name,
-                "password": nova.client.password, # not sure if this is right
+                "password": nova.client.password,  # not sure if this is right
                 "tenant_id": nova_user.tenantId,
                 "user_id": nova_user.id,
-                "project_id": nova.projectid
+                "project_id": nova.projectid  # what does this mean and why is it set to the admin have it
             },
 
             "compute_admin_user": {
