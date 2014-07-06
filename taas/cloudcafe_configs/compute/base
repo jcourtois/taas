@@ -3,79 +3,81 @@ serialize_format=json
 deserialize_format=json
 
 [user_auth_config]
-endpoint=<auth_endpoint>
-strategy=<keystone/rax_auth>
+endpoint
+strategy=keystone
 
 [compute]
-hypervisor=<kvm/qemu/xen_server/bare_metal/lxc>
+hypervisor
 
 [compute_admin_auth_config]
-endpoint=<auth_endpoint>
-strategy=<keystone/rax_auth>
+endpoint
+strategy=keystone
 
 [compute_endpoint]
-region=<region>
-compute_endpoint_name=<compute_name>
+region=nova
+compute_endpoint_name=RegionOne
 
 [compute_admin_endpoint]
-region=<region>
-compute_endpoint_name=<compute_name>
+region=RegionOne
+compute_endpoint_name=nova
 
 [user]
 # This should not be an admin user
-username=<username>
-password=<password>
-tenant_id=<tenant_id>
-user_id=<user_id>
-project_id=<project_id>
+username
+password
+tenant_id
+user_id
+project_id
 
 [compute_admin_user]
-username=<username>
-password=<password>
-tenant_name=<tenant_name>
+username
+password
+tenant_name
 
 [compute_secondary_user]
 # This should not be an admin user
-username=<username>
-password=<password>
-tenant_name=<tenant_name>
+username
+password
+tenant_name
 
 [flavors]
-primary_flavor=<flavor_id>
-secondary_flavor=<different_flavor_id>
-resize_enabled=<True/False>
+primary_flavor=1
+secondary_flavor=2
+resize_enabled=true
 
 [images]
-primary_image=<image_id>
-secondary_image=<different_image_id>
+primary_image
+secondary_image
 image_status_interval=15
 snapshot_timeout=900
-can_get_deleted_image=<True/False>
-primary_image_has_protected_properties=<True/False>
-primary_image_default_user=<user>
-non_inherited_metadata_filepath=<file_path>
+can_get_deleted_image=true
+primary_image_has_protected_properties=true
+primary_image_default_user=admin
+non_inherited_metadata_filepath=none
 
 [servers]
-instance_auth_strategy=<password/key>
+instance_auth_strategy=key
 server_status_interval=15
 server_build_timeout=600
 server_resize_timeout=1800
-network_for_ssh=<public/private>
-ip_address_version_for_ssh=<4/6>
-instance_disk_path=<path_of_instance_primary_disk>
+network_for_ssh=private
+ip_address_version_for_ssh=4
+instance_disk_path=/dev/xvda
 connection_retry_interval=15
 connection_timeout=600
-split_ephemeral_disk_enabled=<True/False>
-ephemeral_disk_max_size=<max_ephemeral_size>
-resource_build_attempts=<num_of_retries>
-disk_format_type=<desired_format_type>
-personality_file_injection_enabled=<True/False>
-default_file_path=<remote_path>
+split_ephemeral_disk_enabled=true
+ephemeral_disk_max_size=10
+resource_build_attempts=3
+disk_format_type=ext3
+personality_file_injection_enabled=true
+default_file_path=/
+expected_networks={"private": {"v4": true, "v6": false}}
+default_injected_files
 
 [config_drive]
-openstack_meta_path=<path_to_openstack/latest/meta_data.json>
-ec_meta_path=<path_to_ec2/latest/meta-data.json>
-base_path_to_mount=<config_drive_path>
-mount_source_path=<mount_source_path>
-min_size=<min_size>
-max_size=<max_size>
+openstack_meta_path
+ec_meta_path
+base_path_to_mount
+mount_source_path
+min_size
+max_size
