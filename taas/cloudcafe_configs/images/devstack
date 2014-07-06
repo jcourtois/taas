@@ -1,18 +1,3 @@
-# ======================================================
-# devstack.config
-# ------------------------------------------------------
-# This configuration is specifically a reference
-# implementation for a configuration file for a Devstack
-# implementation: http://devstack.org.
-# You must create a proper configuration file and supply
-# the correct values for your Environment(s)
-#
-# For multiple environments it is suggested that you
-# generate specific configurations and name the files
-# along the lines of
-# <ENVIRONMENT>.<VERSION>.config
-# ======================================================
-
 [user_auth_config]
 endpoint=http://10.0.2.15:35357
 strategy=keystone

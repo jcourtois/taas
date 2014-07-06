@@ -1,12 +1,3 @@
-# ======================================================
-# reference.json.config
-# ------------------------------------------------------
-# This configuration is specifically a reference
-# implementation for a configuration file.
-# You must create a proper configuration file and supply
-# the correct values for your Environment(s)
-# ======================================================
-
 [marshalling]
 serialize_format=json
 deserialize_format=json
