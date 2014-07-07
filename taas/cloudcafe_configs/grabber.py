@@ -34,12 +34,11 @@ def get_cloudcafe_environment(env, product, special_config=None):
 def python_dict_to_environment_var_dict(env_dict):
     subprocess_env = os.environ.copy()
     for section, values in env_dict.items():
-        if section == "marshalling":
-            embed()
         for variable, value in values.items():
-            environment_var = "CAFE_{0}_{1}".format(section, variable)
-            subprocess_env[environment_var] = value
-            print "export {}={}".format(environment_var, value)
+            if variable != "__name__":
+                environment_var = "CAFE_{0}_{1}".format(section, variable)
+                subprocess_env[environment_var] = value
+                print "export {}={}".format(environment_var, value)
     return subprocess_env
 
 
