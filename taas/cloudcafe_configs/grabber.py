@@ -8,13 +8,14 @@ LOG = logging.getLogger(__name__)
 
 def get_cloudcafe_environment(env, product, special_config=None):
     gatherer = ClientInfoGatherer(env)
-    LOG.info("Loading base configuration file: {}/{}".format(product, "base"))
+    LOG.info("Loading base configuration file: cloudcafe_configs/{}/{}"
+             "".format(product, "base"))
     environment = import_config(product, "base")
     embed()
 
     if special_config:
-        LOG.info("Loading config override file: {}/{}".format(product,
-                                                              special_config))
+        LOG.info("Loading config override file: cloudcafe_configs/{}/{}"
+                 "".format(product, special_config))
         environment.update(import_config(product, special_config))
     embed()
 
@@ -45,7 +46,7 @@ def python_dict_to_environment_var_dict(env_dict):
 
 def import_config(product, config):
     parser = ConfigParser.SafeConfigParser(allow_no_value=True)
-    filepath = os.path.abspath('{product}/{config}'
+    filepath = os.path.abspath('cloudcafe_configs/{product}/{config}'
                                .format(product=product, config=config))
 
     with open(filepath) as config_file:
