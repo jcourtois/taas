@@ -56,7 +56,7 @@ class CloudCafe(Framework):
         taas_path = os.path.abspath('.')
         p = subprocess.Popen(
             "cafe-runner {product} {taas_path}/taas/cloudcafe_configs/"
-            "{product}".format(product=self.product, taas_path=taas_path),
+            "{product}/base".format(product=self.product, taas_path=taas_path),
             env=env_dict, shell=True)
 
         for line in iter(p.stdout.readline, ''):
