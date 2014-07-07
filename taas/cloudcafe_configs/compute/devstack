@@ -1,9 +1,9 @@
 [user_auth_config]
-endpoint=<auth_endpoint>
+endpoint
 strategy=keystone
 
 [compute_admin_auth_config]
-endpoint=<auth_endpoint>
+endpoint
 strategy=keystone
 
 
@@ -11,9 +11,9 @@ strategy=keystone
 username=demo
 password=password
 tenant_name=demo
-tenant_id=<tenant_id>
-user_id=<user_id>
-project_id=<project_id>
+tenant_id
+user_id
+project_id
 
 [compute]
 hypervisor=qemu
@@ -34,8 +34,8 @@ secondary_flavor=84
 resize_enabled=True
 
 [images]
-primary_image=<image_id>
-secondary_image=<different_image_id>
+primary_image
+secondary_image
 image_status_interval=15
 snapshot_timeout=900
 can_get_deleted_image=false

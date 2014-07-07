@@ -4,54 +4,54 @@ strategy=<keystone;raxauth;saio_tempauth>
 
 # This should not be an admin user
 [user]
-username=<username>
-password=<password>
-tenant_name=<tenant_name>
+username
+password
+tenant_name
 
 [images_admin_user]
-username=<username>
-password=<password>
-tenant_name=<tenant_name>
+username
+password
+tenant_name
 
 [images_secondary_user]
-username=<username>
-password=<password>
-tenant_name=<tenant_name>
+username
+password
+tenant_name
 
 [compute_endpoint]
-region=<region>
-compute_endpoint_name=<compute_name>
+region
+compute_endpoint_name
 
 [flavors]
-primary_flavor=<flavor_id>
-secondary_flavor=<different_flavor_id>
+primary_flavor
+secondary_flavor
 
 [images]
-base_url=<http://x.x.x.x:9292>
-primary_image=<image_id>
-secondary_image=<different_image_id>
+base_url
+primary_image
+secondary_image
 image_status_interval=15
 snapshot_timeout=900
 created_at_offset=300
 updated_at_offset=300
 
 # an image that is preloaded in your deployment for testing
-test_image=<image_name>
+test_image
 
 # default properties used in some tests
-test_container_format=<container_format>
-test_disk_format=<disk_format>
+test_container_format
+test_disk_format
 
 # remote_image is an image file hosted remotely
-remote_image=<http://example.com/some_image.iso>
+remote_image
 
 # http_image is an image file that Glance should attempt to download
-http_image=<http://download.cirros-cloud.net/0.3.1/cirros-0.3.1-arm-uec.targ.gz>
+http_image
 
 # image_schema_json is the path of the json file
 # which contains the image schema data
-image_schema_json=<.opencafe/data/image_schema.json>
+image_schema_json
 
 # images_schema_json is the path of the json file
 # which contains the images schema data
-images_schema_json=<.opencafe/data/images_schema.json>
+images_schema_json

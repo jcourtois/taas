@@ -3,7 +3,7 @@ serialize_format=json
 deserialize_format=json
 
 [cloudkeep]
-base_url=<base_url>
+base_url
 api_version=v1
 tenant_id=test_tenant
 # these max values should match the values in
