@@ -10,7 +10,7 @@ LOG = Reporter(__name__).setup()
 
 
 def main(endpoint, username='admin', password='secrete', framework='tempest',
-         test='', devstack=False):
+         test='', product='compute', special_config=None, devstack=False):
 
     environment = Environment(username, password, endpoint)
     environment.build()
@@ -18,7 +18,8 @@ def main(endpoint, username='admin', password='secrete', framework='tempest',
     if 'tempest' in framework:
         framework = Tempest(environment.config, framework, test)
     else:
-        framework = CloudCafe(environment, framework, test, devstack)
+        framework = CloudCafe(environment, framework, test, product,
+                              special_config)
 
     with cleanup(environment):
         results = framework.test_from()
