@@ -44,8 +44,9 @@ def python_dict_to_environment_var_dict(env_dict):
 
 def import_config(product, config):
     parser = ConfigParser.SafeConfigParser(allow_no_value=True)
-    filepath = os.path.abspath('taas/cloudcafe_configs/{product}/{config}'
-                               .format(product=product, config=config))
+    filepath = os.path.abspath(
+        'taas/cloudcafe_configs/{product}/{config}.config'.format(
+            product=product, config=config))
 
     with open(filepath) as config_file:
         parser.readfp(config_file)
