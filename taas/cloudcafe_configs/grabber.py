@@ -15,7 +15,11 @@ def get_cloudcafe_environment(env, product, special_config=None):
     if special_config:
         LOG.info("Loading config override file: cloudcafe_configs/{}/{}"
                  "".format(product, special_config))
-        environment.update(import_config(product, special_config))
+        override = import_config(product, special_config)
+        for section in environment:
+            for option in environment[section]:
+                environment[section][option] = (override[section][option] or
+                                                environment[section][option])
 
     for section in environment:
         for option in environment[section]:
