@@ -19,7 +19,7 @@ def get_cloudcafe_environment(env, product, special_config=None):
 
     for section in environment:
         for option in environment[section]:
-            if option is None:
+            if environment[section][option] is None:
                 value = gatherer.get_from_clients(section, option)
                 environment[section][option] = value
                 LOG.info("env[{section}][{option}] was not defined; overriding"
@@ -87,8 +87,8 @@ class ClientInfoGatherer:
             },
 
             "images": {
-                "primary_image": self.env.config['images'][0],
-                "secondary_image": self.env.config['images'][1],
+                "primary_image": self.env.config['images'][0]['id'],
+                "secondary_image": self.env.config['images'][1]['id'],
             },
 
             "compute": {
