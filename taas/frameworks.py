@@ -53,10 +53,9 @@ class CloudCafe(Framework):
                                                      product=self.product,
                                                      special_config=
                                                      self.special_config)
-        taas_path = os.path.abspath('.')
         p = subprocess.Popen(
-            "cafe-runner {product} {taas_path}/taas/cloudcafe_configs/"
-            "{product}/base".format(product=self.product, taas_path=taas_path),
+            "cafe-runner {product} reference.json.config".format(
+                product=self.product),
             env=env_dict, shell=True)
 
         for line in iter(p.stdout.readline, ''):
