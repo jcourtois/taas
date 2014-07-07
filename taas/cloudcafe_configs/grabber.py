@@ -11,13 +11,11 @@ def get_cloudcafe_environment(env, product, special_config=None):
     LOG.info("Loading base configuration file: cloudcafe_configs/{}/{}"
              "".format(product, "base"))
     environment = import_config(product, "base")
-    embed()
 
     if special_config:
         LOG.info("Loading config override file: cloudcafe_configs/{}/{}"
                  "".format(product, special_config))
         environment.update(import_config(product, special_config))
-    embed()
 
     for section in environment:
         for option in environment[section]:
@@ -27,7 +25,6 @@ def get_cloudcafe_environment(env, product, special_config=None):
                 LOG.info("env[{section}][{option}] was not defined; overriding"
                          " it with '{value}', gathered from OS client info."
                          .format(section=section, option=option, value=value))
-    embed()
 
     subprocess_env = os.environ.copy()
     subprocess_env.update(python_dict_to_environment_var_dict(environment))
@@ -37,6 +34,8 @@ def get_cloudcafe_environment(env, product, special_config=None):
 def python_dict_to_environment_var_dict(env_dict):
     subprocess_env = os.environ.copy()
     for section, values in env_dict.items():
+        if section == "marshalling":
+            embed()
         for variable, value in values.items():
             environment_var = "CAFE_{0}_{1}".format(section, variable)
             subprocess_env[environment_var] = value
@@ -46,7 +45,7 @@ def python_dict_to_environment_var_dict(env_dict):
 
 def import_config(product, config):
     parser = ConfigParser.SafeConfigParser(allow_no_value=True)
-    filepath = os.path.abspath('cloudcafe_configs/{product}/{config}'
+    filepath = os.path.abspath('taas/cloudcafe_configs/{product}/{config}'
                                .format(product=product, config=config))
 
     with open(filepath) as config_file:
