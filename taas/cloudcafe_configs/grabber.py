@@ -73,7 +73,7 @@ class ClientInfoGatherer:
 
         return {
             "OPENCAFE_ENGINE": {
-                "config_directory": "~/.cloudcafe/configs",
+                "config_directory": "~/taas/taas/cloudcafe_configs",
                 "log_directory": "/logz",
                 "data_directory": "/stuff",
                 "logging_verbosity": "STANDARD",
