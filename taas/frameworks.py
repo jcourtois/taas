@@ -5,7 +5,7 @@ import subprocess
 
 from jinja2 import Template
 from os.path import abspath, dirname, exists, join
-from taas.test_environments.cloudcafe_compute import get_cloudcafe_env_dict
+import taas.cloudcafe_configs.grabber as grabber
 
 LOG = logging.getLogger(__name__)
 
@@ -41,21 +41,21 @@ class Framework(object):
 
 class CloudCafe(Framework):
 
-    def __init__(self, environment, framework, test, devstack):
+    def __init__(self, environment, framework, test, product,
+                 special_config=None):
         super(CloudCafe, self).__init__(environment.config, framework, test)
-        self.nova = environment.nova
-        self.keystone = environment.keystone
-        self.devstack = devstack
+        self.special_config = special_config
+        self.product = product
+        self.env = environment
 
     def test_from(self):
-
-        subprocess_env = get_cloudcafe_env_dict(self.nova, self.keystone,
-                                                self.env.config, self.devstack)
-        sys.exit(0)
-        subprocess.Popen("cafe-runner compute empty.config",
-                         env=subprocess_env, shell=True)
-
-
+        env_dict = grabber.get_cloudcafe_environment(env=self.env,
+                                                     product=self.product,
+                                                     special_config=
+                                                     self.special_config)
+        raise NotImplementedError
+        # subprocess.Popen("cafe-runner compute empty.config",
+        #                  env=subprocess_env, shell=True)
 
 
 class Tempest(Framework):
