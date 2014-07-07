@@ -53,9 +53,14 @@ class CloudCafe(Framework):
                                                      product=self.product,
                                                      special_config=
                                                      self.special_config)
-        raise NotImplementedError
-        # subprocess.Popen("cafe-runner compute empty.config",
-        #                  env=subprocess_env, shell=True)
+        p = subprocess.Popen(
+            "cafe-runner {product} taas/cloudcafe_configs/{product}/base"
+            .format(product=self.product), env=env_dict, shell=True)
+
+        for line in iter(p.stdout.readline, ''):
+            line = line.replace('\r', '').replace('\n', '')
+            print line
+            sys.stdout.flush()
 
 
 class Tempest(Framework):
