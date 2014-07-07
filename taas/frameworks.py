@@ -54,7 +54,7 @@ class CloudCafe(Framework):
                                                      special_config=
                                                      self.special_config)
         p = subprocess.Popen(
-            "cafe-runner {product} reference.json.config".format(
+            "sudo cafe-runner {product} reference.json.config".format(
                 product=self.product),
             env=env_dict, shell=True)
 
