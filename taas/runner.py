@@ -22,19 +22,19 @@ def main(endpoint, username='admin', password='secrete', framework='tempest',
                               special_config)
 
     with cleanup(environment):
+        environment.build()
         results = framework.test_from()
-
-    return results
+        return results
 
 
 @contextmanager
-def cleanup(environment):
+def cleanup(stage):
     try:
         yield
     except (Exception, KeyboardInterrupt) as exc:
-        LOG.error('Destroying environment: {0}'.format(exc))
+        LOG.error('Run failed: {1}'.format(stage, exc))
     finally:
-        environment.destroy()
+        stage.destroy()
 
 
 if __name__ == '__main__':

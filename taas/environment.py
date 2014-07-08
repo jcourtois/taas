@@ -1,9 +1,13 @@
 import logging
 import re
 
+from uuid import uuid4 as uuid
+
 from keystoneclient.v2_0.client import Client as keystone_client
 from neutronclient.v2_0.client import Client as neutron_client
 from novaclient.v1_1 import client as nova_client
+
+from .utils import retrieve
 
 LOG = logging.getLogger(__name__)
 
@@ -36,37 +40,28 @@ class Environment(object):
             auth_url=auth_url
         )
 
-    def create_tenant(self, name, enabled=True):
-        LOG.info('Creating tenant: {0}'.format(name))
-        try:
-            self.tenant = self.keystone.tenants.create(name, enabled)
-        except Exception as exc:
-            LOG.warning('Tenant already exists: {0} - {1}'.format(name, exc))
-
-        self.tenant = self.keystone.tenants._get(
-            "/tenants/?name=%s" % name,
-            "tenant"
-        )
-
-    def create_users(self, users, password='secrete', enabled=True):
-        LOG.info('Creating users: {0}'.format(', '.join(users)))
+        self.tenant = None
         self.users = []
+
+        self.network = None
+        self.router = None
+
+    def create_tenant(self, name=None):
+        LOG.info('Creating tenant')
+        if not name:
+            name = str(uuid())
+        self.tenant = retrieve(self.keystone, 'tenant', name=name)
+
+    def create_users(self, names=None, password='secrete'):
+        LOG.info('Creating users')
         self.config['users'] = {}
-        self.config['users']['admin'] = {
-            'user': self.username,
-            'password': self.password,
-            'tenant': self.username
-        }
         self.config['users']['guest'] = []
-        for name in users:
-            try:
-                self.keystone.users.create(name, password, enabled)
-            except Exception as exc:
-                LOG.warning('User already exists: {0} - {1}'.format(name, exc))
-            user = self.keystone.users._get(
-                "/users/?name=%s" % name,
-                "user"
-            )
+
+        if not names:
+            names = [str(uuid()) for each in range(2)]
+        for name in names:
+            user = retrieve(self.keystone, 'user', name=name,
+                            password=password)
             self.users.append(user)
             self.config['users']['guest'].append({
                 'name': name,
@@ -78,18 +73,22 @@ class Environment(object):
                     'user': user.id,
                     'tenant': self.tenant.id
                 }})
-            self.create_role(user)
+            LOG.info('Provisioning user role')
+            self.provision_role(user)
 
-    def create_role(self, user):
-        LOG.info('Creating appropriate role')
-        for role in self.keystone.roles.list():
-            if 'Member' in role.name:
-                self.role = role
+        self.config['users']['admin'] = {
+            'user': self.username,
+            'password': self.password,
+            'tenant': self.username
+        }
+
+    def provision_role(self, user):
+        roles = self.keystone.roles.list()
+        role = next(role for role in roles if '_member_' in role.name)
         try:
             self.keystone.roles.add_user_role(user, role, tenant=self.tenant)
         except Exception as exc:
-            LOG.warning('User {0} has appropriate role: {1}'.format(user.name,
-                                                                    exc))
+            LOG.warning('User {0} has correct role'.format(user.name, exc))
 
     def get_catalog(self):
         LOG.info('Gathering service catalog')
@@ -131,15 +130,10 @@ class Environment(object):
 
         self.config['images'] = [image, image2]
 
-    def create_network(self, name):
+    def create_network(self, name=None):
         LOG.info('Creating network')
-        networks = self.neutron.list_networks()['networks']
-        for network in networks:
-            if name in network['name']:
-                self.network = self.neutron.show_network(
-                    network['id'])['network']
-                self.config['network'] = self.network
-                return
+        if not name:
+            name = str(uuid())
 
         payload = {
             "network": {
@@ -150,14 +144,10 @@ class Environment(object):
         self.network = self.neutron.create_network(payload)['network']
         self.config['network'] = self.network
 
-    def create_router(self, name):
+    def create_router(self, name=None):
         LOG.info('Creating router')
-        routers = self.neutron.list_routers()['routers']
-        for router in routers:
-            if name in router['name']:
-                self.router = self.neutron.show_router(router['id'])['router']
-                self.config['router'] = self.router
-                return
+        if not name:
+            name = str(uuid())
 
         payload = {
             "router": {
@@ -170,21 +160,28 @@ class Environment(object):
 
     def build(self):
         LOG.info('Building testing environment')
-        self.create_tenant('taas')
-        self.create_users(['taas_demo', 'taas_demo2'])
 
         self.get_catalog()
         self.get_images()
 
-        self.create_network('taas_network')
-        self.create_router('taas_router')
+        self.create_tenant()
+        self.create_users()
+
+        self.create_network()
+        self.create_router()
 
     def destroy(self):
         LOG.info('Destroying testing environment')
-        self.keystone.tenants.delete(self.tenant)
 
-        for user in self.users:
-            self.keystone.users.delete(user)
+        if self.tenant:
+            self.keystone.tenants.delete(self.tenant)
 
-        self.neutron.delete_network(self.network['id'])
-        self.neutron.delete_router(self.router['id'])
+        [self.keystone.users.delete(user) for user in self.users if self.users]
+
+        if self.network:
+            self.neutron.delete_network(self.network['id'])
+
+        if self.router:
+            self.neutron.delete_router(self.router['id'])
+
+        LOG.info('Done!')
