@@ -22,7 +22,7 @@ def get_cloudcafe_environment(env, product, special_config=None):
         for option in environment[section]:
             if environment[section][option] is None:
                 value = gatherer.get_from_clients(section, option)
-                environment[section][option] = value
+                environment[section][option] = bytes(value)  # can't be unicode
                 LOG.info("env[{section}][{option}] was not defined; overriding"
                          " it with '{value}', gathered from OS client info."
                          .format(section=section, option=option, value=value))
