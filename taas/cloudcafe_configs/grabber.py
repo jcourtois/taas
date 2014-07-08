@@ -1,7 +1,7 @@
 import ConfigParser
 import os
 import logging
-from IPython import embed
+import copy
 
 LOG = logging.getLogger(__name__)
 
@@ -16,10 +16,7 @@ def get_cloudcafe_environment(env, product, special_config=None):
         LOG.info("Loading config override file: cloudcafe_configs/{}/{}"
                  "".format(product, special_config))
         override = import_config(product, special_config)
-        for section in environment:
-            for option in environment[section]:
-                environment[section][option] = (override[section][option] or
-                                                environment[section][option])
+        environment = merge_dicts(environment, override)
 
     for section in environment:
         for option in environment[section]:
@@ -33,6 +30,23 @@ def get_cloudcafe_environment(env, product, special_config=None):
     subprocess_env = os.environ.copy()
     subprocess_env.update(python_dict_to_environment_var_dict(environment))
     return subprocess_env
+
+
+def merge_dicts(base, override):
+    """This function takes two dictionaries, each nested one deep.  It returns
+     a dictionary that contains all the keys of the originals where non-none
+     values on the override dict override values on the base dict.
+    """
+    output = copy.copy(base)
+    for section in override:
+        if section not in output:
+            output[section] = override[section]
+        else:
+            for option in set(output[section].keys() +
+                              override[section].keys()):
+                output[section][option] = (override[section].get(option) or
+                                           output[section].get(option))
+    return output
 
 
 def python_dict_to_environment_var_dict(env_dict):
@@ -98,7 +112,7 @@ class ClientInfoGatherer:
 
             "compute": {
                 "hypervisor": nova.hypervisors.list()[0]
-                .hypervisor_type.lower()
+                    .hypervisor_type.lower()
             },
 
             "compute_admin_auth_config": {
@@ -109,7 +123,7 @@ class ClientInfoGatherer:
             "compute_endpoint": {
                 "compute_endpoint_name": "nova",
                 "compute_endpoint_url": self._get_nova_endpoint(),
-                #  ^ not in example config
+                # ^ not in example config
                 "region": "RegionOne"
             },
 
@@ -119,8 +133,8 @@ class ClientInfoGatherer:
             },
 
             "user": {
-            # this is an admin user;
-            # according to the reference config, should not be
+                # this is an admin user;
+                # according to the reference config, should not be
                 "username": nova_user.name,
                 "password": nova.client.password,  # not sure if this is right
                 "tenant_id": nova_user.tenantId,
@@ -148,5 +162,5 @@ class ClientInfoGatherer:
     def _get_nova_endpoint(self):
         nova_endpoint = "".join(self.env.config['catalog']['nova']['endpoints'
                                 ]['public']
-                                .rsplit('/')[:-1])
+                                    .rsplit('/')[:-1])
         return nova_endpoint
