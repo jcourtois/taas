@@ -1,16 +1,15 @@
+import json
+import sys
+# import xml.etree as xml
+
+from os.path import dirname, join
 from paste.httpserver import serve
 from pyramid.config import Configurator
 from pyramid.response import Response
-from pyramid.view import view_config
 
-import sys
-import os.path
+from .. import runner
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-
-import taas.runner
-# import xml.etree as xml
-import json
+sys.path.append(join(dirname(__file__), '..'))
 
 
 def get_not_defined(request):
@@ -19,13 +18,13 @@ def get_not_defined(request):
 
 def test_tempest(request):
     request_dict = json.loads(request.body)
-    results = taas.runner.main(framework="tempest", **request_dict)
+    results = runner.main(framework="tempest", **request_dict)
     return Response(results)
 
 
 def test_cloudcafe(request):
     request_dict = json.loads(request.body)
-    results = taas.runner.main(framework="cloudcafe", **request_dict)
+    results = runner.main(framework="cloudcafe", **request_dict)
     return Response(results)
 
 
@@ -48,4 +47,4 @@ if __name__ == '__main__':
                     route_name='cloudcafe', request_method='GET')
 
     app = config.make_wsgi_app()
-    serve(app, host='0.0.0.0')
+    serve(app, host='0.0.0.0', port='5000')

@@ -13,28 +13,27 @@ def main(endpoint, username='admin', password='secrete', framework='tempest',
          test='', product='compute', special_config=None, devstack=False):
 
     environment = Environment(username, password, endpoint)
-    environment.build()
-
-    if 'tempest' in framework:
-        framework = Tempest(environment.config, framework, test)
-    else:
-        framework = CloudCafe(environment, framework, test, product,
-                              special_config)
-
     with cleanup(environment):
-        results = framework.test_from()
+        environment.build()
 
-    return results
+        if 'tempest' in framework:
+            framework = Tempest(environment.config, framework, test)
+        else:
+            framework = CloudCafe(environment, framework, test, product,
+                                  special_config)
+
+        results = framework.test_from()
+        return results
 
 
 @contextmanager
-def cleanup(environment):
+def cleanup(stage):
     try:
         yield
     except (Exception, KeyboardInterrupt) as exc:
-        LOG.error('Destroying environment: {0}'.format(exc))
+        LOG.error('Run failed: {1}'.format(stage, exc))
     finally:
-        environment.destroy()
+        stage.destroy()
 
 
 if __name__ == '__main__':
