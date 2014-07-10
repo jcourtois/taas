@@ -12,8 +12,8 @@ LOG = logging.getLogger(__name__)
 
 class Framework(object):
 
-    def __init__(self, env, framework, test):
-        self.env = env
+    def __init__(self, config, framework, test):
+        self.config = config
         self.framework = framework
         self.test = test
 
@@ -26,11 +26,11 @@ class Framework(object):
         with open(join(template_dir, example), 'r') as stream:
             template = Template(stream.read())
 
-        self.settings = template.render(catalog=self.env.config['catalog'],
-                                        images=self.env.config['images'],
-                                        network=self.env.config['network'],
-                                        router=self.env.config['router'],
-                                        users=self.env.config['users'])
+        self.settings = template.render(catalog=self.config['catalog'],
+                                        images=self.config['images'],
+                                        network=self.config['network'],
+                                        router=self.config['router'],
+                                        users=self.config['users'])
 
         with open('/opt/tempest/etc/tempest.conf', 'w') as stream:
             stream.write(self.settings)
