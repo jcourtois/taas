@@ -73,8 +73,6 @@ class Tempest(Framework):
     def test_from(self):
         LOG.info('Running Tempest tests for: {0}'.format(self.test))
 
-        self.populate_settings()
-
         repo = 'https://github.com/openstack/tempest.git'
         branch = 'stable/havana'
         tempest_dir = '/opt/tempest'
@@ -91,6 +89,8 @@ class Tempest(Framework):
             checkout = 'git clone -b {0} {1} {2}'.format(branch, repo,
                                                          tempest_dir)
             subprocess.check_call(checkout, shell=True)
+
+        self.populate_settings()
 
         json_file = 'taas_results.json'
         json_flag = '--with-json --json-file={0}'.format(json_file)
