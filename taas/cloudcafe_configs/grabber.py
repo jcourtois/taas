@@ -133,7 +133,7 @@ class ClientInfoGatherer:
             },
 
             "servers": {
-                "default_network": self.env.network['id']
+                "default_network": self.env.network['name']
             },
 
             "user": {
