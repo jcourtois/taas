@@ -165,7 +165,6 @@ class ClientInfoGatherer:
         }
 
     def _get_nova_endpoint(self):
-        nova_endpoint = "".join(self.env.config['catalog']['nova']['endpoints'
-                                ]['public']
-                                    .rsplit('/')[:-1])
+        nova_endpoint = (self.env.config['catalog']
+                         ['nova']['endpoints']['public']).rsplit('/', 1)[0]
         return nova_endpoint
