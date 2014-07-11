@@ -129,8 +129,8 @@ class ClientInfoGatherer:
 
             "compute_admin_endpoint": {
                 "compute_endpoint_name": "nova",
-                "compute_endpoint_url": self.env.config['catalog']
-                ['nova']['endpoints']['public'].format(nova_user.tenantId),
+                "compute_endpoint_url": self.env.config['catalog']['nova']
+                ['endpoints']['public'].format(tenant_id=nova_user.tenantId),
                 "region": "RegionOne"
             },
 
