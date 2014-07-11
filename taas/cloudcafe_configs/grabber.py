@@ -132,6 +132,10 @@ class ClientInfoGatherer:
                 "region": "RegionOne"
             },
 
+            "servers": {
+                "default_network": self.env.network['id']
+            },
+
             "user": {
                 # this is an admin user;
                 # according to the reference config, should not be
