@@ -10,7 +10,7 @@ LOG = Reporter(__name__).setup()
 
 
 def main(endpoint, username='admin', password='secrete', framework='tempest',
-         test='', product='compute', special_config=None, devstack=False):
+         test='', product='compute', special_config=None):
 
     environment = Environment(username, password, endpoint)
     with cleanup(environment):
