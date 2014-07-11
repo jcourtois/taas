@@ -112,7 +112,7 @@ class ClientInfoGatherer:
 
             "compute": {
                 "hypervisor": nova.hypervisors.list()[0]
-                    .hypervisor_type.lower()
+                .hypervisor_type.lower()
             },
 
             "compute_admin_auth_config": {
@@ -129,6 +129,7 @@ class ClientInfoGatherer:
 
             "compute_admin_endpoint": {
                 "compute_endpoint_name": "nova",
+                "compute_endpoint_url": self._get_nova_endpoint(),
                 "region": "RegionOne"
             },
 
