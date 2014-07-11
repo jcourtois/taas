@@ -133,7 +133,7 @@ class ClientInfoGatherer:
             },
 
             "servers": {
-                "default_network": self.env.network['name']
+                "default_network": nova.networks.find(label="public").id
             },
 
             "user": {
