@@ -41,35 +41,12 @@ class Environment(object):
         LOG.info('Creating tenant')
         self.tenant = self.keystone.tenants.create(tenant_name=str(uuid()))
 
-    def create_users(self, names=None, password='secrete'):
+    def create_users(self, password='secrete'):
         LOG.info('Creating users')
-        self.config['users'] = {}
-        self.config['users']['guest'] = []
-
-        if not names:
-            names = [str(uuid()) for each in range(2)]
-        for name in names:
-            self.users.append(user)
-            self.config['users']['guest'].append({
-                'name': name,
-                'email': user.email,
-                'enabled': user.enabled,
-                'password': password,
-                'tenant': self.tenant.name,
-                'ids': {
-                    'user': user.id,
-                    'tenant': self.tenant.id
-                }})
-            LOG.info('Provisioning user role')
         for each in xrange(2):
             user = self.keystone.users.create(str(uuid()), password=password)
             self.provision_role(user)
-
-        self.config['users']['admin'] = {
-            'user': self.username,
-            'password': self.password,
-            'tenant': self.username
-        }
+            self.users.append(user)
 
     def provision_role(self, user):
         roles = self.keystone.roles.list()
