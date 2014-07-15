@@ -82,21 +82,11 @@ class Environment(object):
 
     def get_images(self):
         LOG.info('Gathering image metadata')
-        images = (image.to_dict() for image in self.nova.images.list())
-
+        images = (image for image in self.nova.images.list())
         try:
-            image = next(images)
+            self.images = [next(images) for each in xrange(2)]
         except StopIteration as exc:
-            LOG.error('No images found: {0}'.format(exc))
-            exit(1)
-
-        try:
-            image2 = next(images)
-        except StopIteration as exc:
-            LOG.warning('Only one image found: {0}'.format(exc))
-            image2 = image
-
-        self.config['images'] = [image, image2]
+            LOG.error('Insufficient amount of images: {0}'.format(exc))
 
     def create_network(self, name=None):
         LOG.info('Creating network')
