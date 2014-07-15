@@ -102,19 +102,15 @@ class Environment(object):
 
     def build(self):
         LOG.info('Building testing environment')
-
         self.get_catalog()
         self.get_images()
-
         self.create_tenant()
         self.create_users()
-
         self.create_network()
         self.create_router()
 
     def destroy(self):
         LOG.info('Destroying testing environment')
-
         if self.tenant:
             self.keystone.tenants.delete(self.tenant)
 
@@ -122,8 +118,6 @@ class Environment(object):
 
         if self.network:
             self.neutron.delete_network(self.network['id'])
-
         if self.router:
             self.neutron.delete_router(self.router['id'])
-
         LOG.info('Done!')
