@@ -37,10 +37,8 @@ class Environment(object):
             auth_url=auth_url
         )
 
-    def create_tenant(self, name=None):
+    def create_tenant(self):
         LOG.info('Creating tenant')
-        if not name:
-            name = str(uuid())
         self.tenant = self.keystone.tenants.create(tenant_name=str(uuid()))
 
     def create_users(self, names=None, password='secrete'):
