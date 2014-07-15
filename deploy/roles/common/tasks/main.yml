@@ -8,11 +8,9 @@
     - python-dev
     - python-pip
 
-- synchronize: src=~/Development/taas archive=no dest=~/ delete=yes  recursive=yes
-  sudo: no
+- synchronize: src=../../../../ archive=no dest=/home/stack/taas delete=yes  recursive=yes
 
-- file: path=~/taas/ owner=stack group=stack mode=775
-  sudo: no
+- file: path=/home/stack/taas owner=stack group=stack mode=775
 
 - pip: requirements='https://raw.githubusercontent.com/jpmontez/taas/master/requirements.txt'
        state=latest
