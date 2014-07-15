@@ -113,9 +113,9 @@ class Environment(object):
         LOG.info('Destroying testing environment')
         if self.tenant:
             self.keystone.tenants.delete(self.tenant)
-
-        [self.keystone.users.delete(user) for user in self.users if self.users]
-
+        if self.users:
+            for user in self.users:
+                self.keystone.users.delete(user)
         if self.network:
             self.neutron.delete_network(self.network['id'])
         if self.router:
