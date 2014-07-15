@@ -12,11 +12,7 @@ LOG = logging.getLogger(__name__)
 class Environment(object):
 
     def __init__(self, username, password, auth_url):
-        self.username = username
-        self.password = password
-        self.auth_url = auth_url
-
-        self.config = {}
+        self.catalog = {}
         self.users = []
         self.tenant = None
         self.network = None
