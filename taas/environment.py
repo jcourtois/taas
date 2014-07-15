@@ -94,19 +94,11 @@ class Environment(object):
                                "shared": True}}
         self.network = self.neutron.create_network(payload)['network']
 
-    def create_router(self, name=None):
+    def create_router(self):
         LOG.info('Creating router')
-        if not name:
-            name = str(uuid())
-
-        payload = {
-            "router": {
-                "name": name,
-                "admin_state_up": True
-            }}
-
+        payload = {"router": {"name": str(uuid()),
+                              "admin_state_up": True}}
         self.router = self.neutron.create_router(payload)['router']
-        self.config['router'] = self.router
 
     def build(self):
         LOG.info('Building testing environment')
