@@ -35,12 +35,3 @@ def cleanup(stage):
         LOG.error('Run failed', exc_info=True)
     finally:
         stage.destroy()
-
-
-def retrieve(client, resource, name, **kwargs):
-    director = getattr(client, '%ss' % resource)
-    try:
-        return director.create(name, **kwargs)
-    except Exception:
-        LOG.exception('Creation failed')
-        sys.exit(1)

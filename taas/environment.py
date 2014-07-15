@@ -6,8 +6,6 @@ from neutronclient.v2_0.client import Client as neutron_client
 from novaclient.v1_1 import client as nova_client
 from uuid import uuid4 as uuid
 
-from .utils import retrieve
-
 LOG = logging.getLogger(__name__)
 
 
@@ -47,7 +45,7 @@ class Environment(object):
         LOG.info('Creating tenant')
         if not name:
             name = str(uuid())
-        self.tenant = retrieve(self.keystone, 'tenant', name=name)
+        self.tenant = self.keystone.tenants.create(tenant_name=str(uuid()))
 
     def create_users(self, names=None, password='secrete'):
         LOG.info('Creating users')
@@ -57,8 +55,6 @@ class Environment(object):
         if not names:
             names = [str(uuid()) for each in range(2)]
         for name in names:
-            user = retrieve(self.keystone, 'user', name=name,
-                            password=password)
             self.users.append(user)
             self.config['users']['guest'].append({
                 'name': name,
@@ -71,6 +67,8 @@ class Environment(object):
                     'tenant': self.tenant.id
                 }})
             LOG.info('Provisioning user role')
+        for each in xrange(2):
+            user = self.keystone.users.create(str(uuid()), password=password)
             self.provision_role(user)
 
         self.config['users']['admin'] = {
