@@ -12,9 +12,9 @@ def main(endpoint, framework, username='admin', password='secrete', test=''):
         environment.build()
 
         if 'tempest' in framework:
-            framework = Tempest(environment.config, framework, test)
+            framework = Tempest(environment, framework, test)
         else:
-            framework = CloudCafe(environment.config, framework, test)
+            framework = CloudCafe(environment, framework, test)
 
         results = framework.test_from()
 

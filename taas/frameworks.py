@@ -11,25 +11,26 @@ LOG = logging.getLogger(__name__)
 
 class Framework(object):
 
-    def __init__(self, config, framework, test):
-        self.config = config
-        self.fwrk = framework
+    def __init__(self, environment, framework, test):
+        self.env = environment
+        self.framework = framework
         self.test = test
 
     def populate_settings(self):
         LOG.info('Building configuration file')
 
         template_dir = join(abspath(dirname(__file__)), 'files/')
-        example = '{0}.conf.example'.format(self.fwrk)
+        example = '{0}.conf.example'.format(self.framework)
 
         with open(join(template_dir, example), 'r') as stream:
             template = Template(stream.read())
 
-        self.settings = template.render(catalog=self.config['catalog'],
-                                        images=self.config['images'],
-                                        network=self.config['network'],
-                                        router=self.config['router'],
-                                        users=self.config['users'])
+        self.settings = template.render(catalog=self.env.catalog,
+                                        images=self.env.images,
+                                        network=self.env.network,
+                                        router=self.env.router,
+                                        users=self.env.users
+                                        )
 
         conf_dir = '/opt/tempest/etc/'
         if not exists(conf_dir):
@@ -63,11 +64,10 @@ class Tempest(Framework):
 
         tests_file = abspath('results.json')
         tests_dir = join(tempest_dir, 'tempest/api/%s' % self.test)
-
-        self.populate_settings()
-
         flags = '--with-json --json-file={0}'.format(tests_file)
         tempest_cmd = 'nosetests --where={0} {1}'.format(tests_dir, flags)
+
+        self.populate_settings()
 
         LOG.info('Running Tempest tests for: {0}'.format(self.test))
 
