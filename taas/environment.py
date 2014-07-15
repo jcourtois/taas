@@ -62,11 +62,11 @@ class Environment(object):
         endpoints = self.keystone.endpoints.list()
         services = self.keystone.services.list()
 
-        self.config['catalog'] = {}
+        _catalog = {}
         for endpoint in endpoints:
             for service in services:
                 if endpoint.service_id in service.id:
-                    self.config['catalog'][service.name] = {
+                    self.catalog[service.name] = {
                         'service_id': service.id,
                         'description': service.description,
                         'ip_address': re.search(
@@ -78,6 +78,7 @@ class Environment(object):
                             'internal': endpoint.internalurl,
                             'public': endpoint.publicurl
                         }}
+        return _catalog
 
     def get_images(self):
         LOG.info('Gathering image metadata')
