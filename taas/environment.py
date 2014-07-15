@@ -88,19 +88,11 @@ class Environment(object):
         except StopIteration as exc:
             LOG.error('Insufficient amount of images: {0}'.format(exc))
 
-    def create_network(self, name=None):
+    def create_network(self):
         LOG.info('Creating network')
-        if not name:
-            name = str(uuid())
-
-        payload = {
-            "network": {
-                "name": name,
-                "shared": True
-            }}
-
+        payload = {"network": {"name": str(uuid()),
+                               "shared": True}}
         self.network = self.neutron.create_network(payload)['network']
-        self.config['network'] = self.network
 
     def create_router(self, name=None):
         LOG.info('Creating router')
