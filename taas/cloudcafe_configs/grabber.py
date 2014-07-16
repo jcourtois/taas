@@ -87,7 +87,6 @@ class ClientInfoGatherer:
     def _load_info_from_clients(self):
         nova = self.env.nova
         keystone = self.env.keystone
-        guest = self.env.config['users']['guest'][0]
 
         nova_user = keystone.users.find(name=nova.client.user)
 
@@ -157,10 +156,9 @@ class ClientInfoGatherer:
             },
 
             "compute_secondary_user": {
-                "username": guest['name'],
-                "password": guest['password'],
-                "tenant_name": keystone.tenants.find(
-                    id=guest['ids']['tenant']).name
+                "username": self.env.users[0].name,
+                "password": self.env.users[0].password,
+                "tenant_name": self.env.users[0].tenantId
             },
 
             "identity_v2_user": {

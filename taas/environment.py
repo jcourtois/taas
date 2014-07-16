@@ -53,7 +53,7 @@ class Environment(object):
     def provision_role(self, user):
         LOG.info('Provisioning user role')
         roles = self.keystone.roles.list()
-        role = [role for role in roles if '_member_' in role.name][0]
+        role = next(role for role in roles if '_member_' in role.name)
         try:
             self.keystone.roles.add_user_role(user, role, tenant=self.tenant)
         except Exception as exc:
