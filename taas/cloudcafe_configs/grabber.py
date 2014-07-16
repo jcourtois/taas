@@ -167,6 +167,6 @@ class ClientInfoGatherer:
         }
 
     def _get_endpoint(self, service_name):
-        endpoint = (self.env.config['catalog']
-                    [service_name]['endpoints']['public']).rsplit('/', 1)[0]
+        endpoint = (self.env.catalog[service_name]
+                    ['endpoints']['public']).rsplit('/', 1)[0]
         return endpoint
