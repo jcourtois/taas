@@ -123,14 +123,13 @@ class ClientInfoGatherer:
 
             "compute_endpoint": {
                 "compute_endpoint_name": "nova",
-                "compute_endpoint_url": self._get_nova_endpoint(),
-                # ^ not in example config
+                "compute_endpoint_url": self._get_endpoint("nova"),
                 "region": "RegionOne"
             },
 
             "compute_admin_endpoint": {
                 "compute_endpoint_name": "nova",
-                "compute_endpoint_url": self._get_nova_endpoint(),
+                "compute_endpoint_url": self._get_endpoint("nova"),
                 "region": "RegionOne"
             },
 
@@ -162,10 +161,14 @@ class ClientInfoGatherer:
                 "password": guest['password'],
                 "tenant_name": keystone.tenants.find(
                     id=guest['ids']['tenant']).name
+            },
+
+            "identity_v2_user": {
+                "authentication_endpoint": self._get_endpoint("keystone")
             }
         }
 
-    def _get_nova_endpoint(self):
-        nova_endpoint = (self.env.config['catalog']
-                         ['nova']['endpoints']['public']).rsplit('/', 1)[0]
-        return nova_endpoint
+    def _get_endpoint(self, service_name):
+        endpoint = (self.env.config['catalog']
+                    [service_name]['endpoints']['public']).rsplit('/', 1)[0]
+        return endpoint
