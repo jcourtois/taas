@@ -45,6 +45,7 @@ class Environment(object):
         LOG.info('Creating users')
         for each in xrange(2):
             user = self.keystone.users.create(str(uuid()), password=password)
+            user.password = password
             self.provision_role(user)
             self.users.append(user)
 
