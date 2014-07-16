@@ -1,10 +1,7 @@
-import argh
-
-from contextlib import contextmanager
-
 from .environment import Environment
 from .frameworks import CloudCafe, Tempest
-from .utils.report import Reporter
+from .utils import cleanup, Reporter
+import argh
 
 LOG = Reporter(__name__).setup()
 
@@ -17,23 +14,13 @@ def main(endpoint, username='admin', password='secrete', framework='tempest',
         environment.build()
 
         if 'tempest' in framework:
-            framework = Tempest(environment.config, framework, test)
+            framework = Tempest(environment, framework, test)
         else:
             framework = CloudCafe(environment, framework, test, product,
                                   special_config)
 
         results = framework.test_from()
         return results
-
-
-@contextmanager
-def cleanup(stage):
-    try:
-        yield
-    except (Exception, KeyboardInterrupt) as exc:
-        LOG.error('Run failed: {1}'.format(stage, exc))
-    finally:
-        stage.destroy()
 
 
 if __name__ == '__main__':

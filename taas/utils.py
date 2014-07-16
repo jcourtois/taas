@@ -1,6 +1,10 @@
 import logging
 import sys
 
+from contextlib import contextmanager
+
+LOG = logging.getLogger(__name__)
+
 
 class Reporter(object):
 
@@ -21,3 +25,13 @@ class Reporter(object):
         logger.addHandler(ch)
 
         return logger
+
+
+@contextmanager
+def cleanup(stage):
+    try:
+        yield
+    except (Exception, KeyboardInterrupt):
+        LOG.error('Run failed', exc_info=True)
+    finally:
+        stage.destroy()
