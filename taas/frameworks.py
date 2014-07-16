@@ -49,7 +49,7 @@ class CloudCafe(Framework):
 
     def __init__(self, environment, framework, test, product,
                  special_config=None):
-        super(CloudCafe, self).__init__(environment.config, framework, test)
+        super(CloudCafe, self).__init__(environment, framework, test)
         self.special_config = special_config
         self.product = product
         self.env = environment
@@ -72,8 +72,8 @@ class CloudCafe(Framework):
 
 class Tempest(Framework):
 
-    def __init__(self, config, framework, test):
-        super(Tempest, self).__init__(config, framework, test)
+    def __init__(self, environment, framework, test):
+        super(Tempest, self).__init__(environment, framework, test)
 
     def test_from(self):
         LOG.info('Running Tempest tests for: {0}'.format(self.test))
