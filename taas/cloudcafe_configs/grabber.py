@@ -106,8 +106,8 @@ class ClientInfoGatherer:
             },
 
             "images": {
-                "primary_image": self.env.config['images'][0]['id'],
-                "secondary_image": self.env.config['images'][1]['id'],
+                "primary_image": self.env.images[0].id,
+                "secondary_image": self.env.images[1].id,
             },
 
             "compute": {
